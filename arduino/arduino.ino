@@ -14,6 +14,10 @@ int light2;
 int light3;
 int moisture;
 
+int pump = 2;
+
+int pump = 2;
+
 // Define Motor Driver pins
 int motorAEnablePin = 5;
 int motorBEnablePin = 6;
@@ -80,11 +84,13 @@ void takeReading() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  pinMode(pump, OUTPUT);
+  digitalWrite(pump, LOW);
 }
 
 // MAIN FUNCTION
 void loop() {
-  // put your main code here, to run repeatedly:
+  // put your main code here, to run repeatedly: 
   takeReading();
   Serial.println(light0);
   Serial.println(light1);
