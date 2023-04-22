@@ -12,13 +12,17 @@ int light2;
 int light3;
 int moisture;
 
+int pump = 2;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  pinMode(pump, OUTPUT);
+  digitalWrite(pump, LOW);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // put your main code here, to run repeatedly: 
   takeReading();
   Serial.println(light0);
   Serial.println(light1);
