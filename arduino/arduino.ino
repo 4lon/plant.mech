@@ -260,15 +260,16 @@ void takeReading() {
 
 void waterPlant() {
   long time = millis();
-  digitalWrite(pump, HIGH);
   while ((analogRead(moisturePin) > waterThreshold) && (millis() < time + 1000)) {
+    // Water the plant
+    digitalWrite(pump, HIGH);
+    delay(1000);
+    digitalWrite(pump, LOW);
   }
-  digitalWrite(pump, LOW);
-  delay(1000);
 }
 
 void turnToSun() {
-  
+
   int moveThreshold = 20; // The amount of diff we need ot see between the two fronts to move
 
   takeReading();
@@ -278,14 +279,15 @@ void turnToSun() {
     (frLight < brLight) || // While frLight not greater 
     (abs(flLight - frLight) > moveThreshold)) { // While left/right diff to big
 
-    if (max(flLight, frLight) < (max(blLight, brLight))) { 
-        // If we are back first
+    if (max(flLight, frLight) < (max(blLight, brLight))) {
+      // If we are back first
 
-        // Turn right
-        turnRight();
-        delay(100);
+      // Turn right
+      turnRight();
+      delay(100);
 
-    } else {
+    }
+    else {
       // If we are front first
       // +ve = need to go RIGHT, -ve = need to go LEFT
       int diff = frLight - flLight;
@@ -294,17 +296,19 @@ void turnToSun() {
       if (max(flLight, blLight) > (max(frLight, brLight))) {
         // Turn left
         turnLeft();
-      } else {
+      }
+      else {
         // Turn right
         turnRight();
       }
-      delay( (abs(diff)/40) * 100 );
+      delay((abs(diff) / 40) * 100);
     }
 
     stop();
     // takeReading();
 
-  } else {
+  }
+  else {
     playWateringSong();
   }
 }
@@ -335,15 +339,27 @@ void setup() {
   initMotors();
   initPump();
 
-  // playWateringSong();
-  // delay(500);
+  playWateringSong();
+  delay(1000);
 }
 
 
 // MAIN FUNCTION
 void loop() {
-  // Put your main code here, to run repeatedly: 
-  // turnToSun();
-  // sensorTest();
-  waterPlant();
+
+  int i = 0;
+  int maxIterations = 5;
+
+  while (i < maxIterations) {
+    // Put your main code here, to run repeatedly: 
+    turnToSun();
+    i++;
+  }
+
+  // i = 0;
+  // while (i < maxIterations) {
+  //   // sensorTest();
+  //   waterPlant();
+  //   i++;
+  // }
 }
