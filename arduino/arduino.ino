@@ -28,6 +28,72 @@ int motorBInput1 = 7;
 // int motorBInput2 = 5;
 
 
+/**
+ * @brief Plays a test song
+ *
+ */
+void playSong() {
+  // notes in the melody:
+  int melody[] = {
+    NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+  };
+  // note durations: 4 = quarter note, 8 = eighth note, etc.:
+  int noteDurations[] = {
+    4, 8, 8, 4, 4, 4, 4, 4
+  };
+
+  // iterate over the notes of the melody:
+  for (int thisNote = 0; thisNote < 8; thisNote++) {
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 1000 / noteDurations[thisNote];
+    tone(8, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+    noTone(8);
+  }
+}
+
+
+/**
+ * @brief Plays the song for when the plant is watering itself
+ *
+ */
+void playWateringSong() {
+  // notes in the melody:
+  int melody[] = {
+    // NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+    NOTE_D4, NOTE_B3, NOTE_D4, NOTE_B3, NOTE_A3, NOTE_B3, NOTE_C4, 0
+  };
+  // note durations: 4 = quarter note, 8 = eighth note, etc.:
+  int noteDurations[] = {
+    // 4, 8, 8, 4, 4, 4, 4, 4
+    4, 4, 4, 4, 4, 4, 4, 4
+  };
+
+  // iterate over the notes of the melody:
+  for (int thisNote = 0; thisNote < 8; thisNote++) {
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 1000 / noteDurations[thisNote];
+    tone(8, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+    noTone(8);
+  }
+}
+
+
 void initMotors() {
   // Set Motor Driver pins as output
   pinMode(motorAEnablePin, OUTPUT);
@@ -198,23 +264,48 @@ void waterPlant() {
   while ((analogRead(moisturePin) > waterThreshold) && (millis() < time + 1000)) {
   }
   digitalWrite(pump, LOW);
+  delay(1000);
 }
 
 void turnToSun() {
+  
+  int moveThreshold = 20; // The amount of diff we need ot see between the two fronts to move
+
   takeReading();
-  while ((max(flLight, blLight) != flLight) && (max(frLight, brLight) != frLight) && (max(flLight, frLight) - min(flLight, frLight) > 30)) {
-    //    Not facing max light
-    if (max(flLight, blLight) > (max(frLight, brLight))) {
-      //    turn left
-      turnLeft();
+
+  if (
+    (flLight < blLight) || // While flLight not greater 
+    (frLight < brLight) || // While frLight not greater 
+    (abs(flLight - frLight) > moveThreshold)) { // While left/right diff to big
+
+    if (max(flLight, frLight) < (max(blLight, brLight))) { 
+        // If we are back first
+
+        // Turn right
+        turnRight();
+        delay(100);
+
+    } else {
+      // If we are front first
+      // +ve = need to go RIGHT, -ve = need to go LEFT
+      int diff = frLight - flLight;
+
+      // If best left is greater than best right
+      if (max(flLight, blLight) > (max(frLight, brLight))) {
+        // Turn left
+        turnLeft();
+      } else {
+        // Turn right
+        turnRight();
+      }
+      delay( (abs(diff)/40) * 100 );
     }
-    else {
-      //    turn right
-      turnRight();
-    }
-    delay(100);
+
     stop();
-    takeReading();
+    // takeReading();
+
+  } else {
+    playWateringSong();
   }
 }
 
@@ -237,88 +328,22 @@ void moveToSun() {
   drive();
 }
 
-/**
- * @brief Plays a test song
- *
- */
-void playSong() {
-  // notes in the melody:
-  int melody[] = {
-    NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
-  };
-  // note durations: 4 = quarter note, 8 = eighth note, etc.:
-  int noteDurations[] = {
-    4, 8, 8, 4, 4, 4, 4, 4
-  };
-
-  // iterate over the notes of the melody:
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
-    // to calculate the note duration, take one second divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 1000 / noteDurations[thisNote];
-    tone(8, melody[thisNote], noteDuration);
-
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = noteDuration * 1.30;
-    delay(pauseBetweenNotes);
-
-    // stop the tone playing:
-    noTone(8);
-  }
-}
-
-
-/**
- * @brief Plays the song for when the plant is watering itself
- *
- */
-void playWateringSong() {
-  // notes in the melody:
-  int melody[] = {
-    // NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
-    NOTE_D4, NOTE_B3, NOTE_D4, NOTE_B3, NOTE_A3, NOTE_B3, NOTE_C4, 0
-  };
-  // note durations: 4 = quarter note, 8 = eighth note, etc.:
-  int noteDurations[] = {
-    // 4, 8, 8, 4, 4, 4, 4, 4
-    4, 4, 4, 4, 4, 4, 4, 4
-  };
-
-  // iterate over the notes of the melody:
-  for (int thisNote = 0; thisNote < 8; thisNote++) {
-    // to calculate the note duration, take one second divided by the note type.
-    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
-    int noteDuration = 1000 / noteDurations[thisNote];
-    tone(8, melody[thisNote], noteDuration);
-
-    // to distinguish the notes, set a minimum time between them.
-    // the note's duration + 30% seems to work well:
-    int pauseBetweenNotes = noteDuration * 1.30;
-    delay(pauseBetweenNotes);
-
-    // stop the tone playing:
-    noTone(8);
-  }
-}
-
 // SETUP FUNCTION
 void setup() {
-  // put your setup code here, to run once:
+  // Put your setup code here, to run once:
   Serial.begin(9600);
   initMotors();
   initPump();
 
-  playWateringSong();
-  delay(500);
-  playWateringSong();
-  delay(500);
+  // playWateringSong();
+  // delay(500);
 }
 
 
 // MAIN FUNCTION
 void loop() {
-  // put your main code here, to run repeatedly: 
-  turnToSun();
-  sensorTest();
+  // Put your main code here, to run repeatedly: 
+  // turnToSun();
+  // sensorTest();
+  waterPlant();
 }
