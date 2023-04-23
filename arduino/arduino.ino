@@ -67,6 +67,11 @@ void motorTest() {
   }
 }
 
+void initPump() {
+  pinMode(pump, OUTPUT);
+  digitalWrite(pump, LOW);
+}
+
 /**
   @brief Tests the pump in an infinite loop
 
@@ -83,6 +88,18 @@ void pumpTest() {
     digitalWrite(pump, LOW);
 
     // Wait for 1 second
+    delay(1000);
+  }
+}
+
+void sensorTest() {
+  while (true) {
+    takeReading();
+    Serial.println(flLight);
+    Serial.println(frLight);
+    Serial.println(blLight);
+    Serial.println(brLight);
+    Serial.println(moisture);
     delay(1000);
   }
 }
@@ -112,21 +129,12 @@ void waterPlant() {
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  pinMode(pump, OUTPUT);
-  digitalWrite(pump, LOW);
-//  initMotors();
-//  pumpTest();
+  initMotors();
+  initPump();
 }
 
 
 // MAIN FUNCTION
 void loop() {
   // put your main code here, to run repeatedly: 
-  takeReading();
-  Serial.println(flLight);
-  Serial.println(frLight);
-  Serial.println(blLight);
-  Serial.println(brLight);
-  Serial.println(moisture);
-  delay(1000);
 }
