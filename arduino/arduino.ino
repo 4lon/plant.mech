@@ -3,9 +3,9 @@
 
 // GLOBAL VARIABLES
 int flLightPin = A0;
-int frLightPin = A1;
+int frLightPin = A3;
 int blLightPin = A2;
-int brLightPin = A3;
+int brLightPin = A1;
 int moisturePin = A4;
 
 int flLight;
@@ -17,7 +17,7 @@ int moisture;
 int pump = 2;
 int waterThreshold = 360;
 
-int lightThreshold = 100;
+int lightThreshold = 300;
 
 // Define Motor Driver pins
 int motorAEnablePin = 5;
@@ -172,15 +172,12 @@ void pumpTest() {
 }
 
 void sensorTest() {
-  while (true) {
-    takeReading();
-    Serial.println(flLight);
-    Serial.println(frLight);
-    Serial.println(blLight);
-    Serial.println(brLight);
-    Serial.println(moisture);
-    delay(1000);
-  }
+  takeReading();
+  Serial.println(flLight);
+  Serial.println(frLight);
+  Serial.println(blLight);
+  Serial.println(brLight);
+  Serial.println(moisture);
 }
 
 
@@ -204,14 +201,18 @@ void waterPlant() {
 
 void turnToSun() {
   takeReading();
-  while ((max(flLight, blLight) != flLight) && (max(frLight, brLight) != frLight)) {
+  while ((max(flLight, blLight) != flLight) && (max(frLight, brLight) != frLight) && (max(flLight, frLight) - min(flLight, frLight) > 30)) {
 //    Not facing max light
   if (max(flLight, blLight) > (max(frLight, brLight))) {
 //    turn left
+    turnLeft();
   } else {
 //    turn right
+    turnRight();
   }
-    takeReading();
+  delay(100);
+  stop();
+  takeReading();
   }
 }
 
@@ -241,10 +242,13 @@ void setup() {
   Serial.begin(9600);
   initMotors();
   initPump();
+//  sensorTest();
 }
 
 
 // MAIN FUNCTION
 void loop() {
   // put your main code here, to run repeatedly: 
+  turnToSun();
+  sensorTest();
 }
