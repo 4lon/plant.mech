@@ -1,5 +1,4 @@
 // IMPORTS
-#include <arduino-timer.h>
 #include "pitches.h"
 
 // GLOBAL VARIABLES
