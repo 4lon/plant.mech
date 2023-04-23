@@ -124,6 +124,28 @@ void waterPlant() {
   digitalWrite(pump, LOW);
 }
 
+void turnToSun() {
+  takeReading();
+  while ((max(flLight, blLight) != flLight) && (max(frLight, brLight) != frLight)) {
+//    Not facing max light
+  if (max(flLight, blLight) > (max(frLight, brLight)) {
+//    turn left
+  } else {
+//    turn right
+  }
+    takeReading()
+  }
+}
+
+void moveToSun() {
+  takeReading();
+
+//  Face right direction
+  turnToSun();
+//  Drive towards
+  drive();
+}
+
 
 // SETUP FUNCTION
 void setup() {
