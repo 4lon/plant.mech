@@ -1,5 +1,6 @@
 // IMPORTS
 #include <arduino-timer.h>
+#include "pitches.h"
 
 // GLOBAL VARIABLES
 int flLightPin = A0;
@@ -26,6 +27,18 @@ int motorAInput1 = 4;
 // int motorAInput2 = 3;
 int motorBInput1 = 7;
 // int motorBInput2 = 5;
+
+// Speaker
+// notes in the melody:
+int melody[] = {
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+};
+// note durations: 4 = quarter note, 8 = eighth note, etc.:
+int noteDurations[] = {
+  4, 8, 8, 4, 4, 4, 4, 4
+};
+
+
 
 void initMotors() {
   // Set Motor Driver pins as output
@@ -123,26 +136,26 @@ void motorTest() {
     rightMotorOff();
     leftMotorOff();
     delay(5000);
-    
-//    // Make Motor A spin forward
-//    digitalWrite(motorAInput1, HIGH);
-//    // digitalWrite(motorAInput2, LOW);
-//
-//    // Make Motor B spin backward
-//    digitalWrite(motorBInput1, HIGH);
-//    // digitalWrite(motorBInput2, HIGH);
-//
-//    // Wait for 2 seconds
-//    delay(2000);
-//
-//    // Stop both motors
-//    digitalWrite(motorAInput1, LOW);
-//    // digitalWrite(motorAInput2, LOW);
-//    digitalWrite(motorBInput1, LOW);
-//    // digitalWrite(motorBInput2, LOW);
-//
-//    // Wait for 1 second
-//    delay(1000);
+
+    //    // Make Motor A spin forward
+    //    digitalWrite(motorAInput1, HIGH);
+    //    // digitalWrite(motorAInput2, LOW);
+    //
+    //    // Make Motor B spin backward
+    //    digitalWrite(motorBInput1, HIGH);
+    //    // digitalWrite(motorBInput2, HIGH);
+    //
+    //    // Wait for 2 seconds
+    //    delay(2000);
+    //
+    //    // Stop both motors
+    //    digitalWrite(motorAInput1, LOW);
+    //    // digitalWrite(motorAInput2, LOW);
+    //    digitalWrite(motorBInput1, LOW);
+    //    // digitalWrite(motorBInput2, LOW);
+    //
+    //    // Wait for 1 second
+    //    delay(1000);
   }
 }
 
@@ -205,12 +218,13 @@ void waterPlant() {
 void turnToSun() {
   takeReading();
   while ((max(flLight, blLight) != flLight) && (max(frLight, brLight) != frLight)) {
-//    Not facing max light
-  if (max(flLight, blLight) > (max(frLight, brLight))) {
-//    turn left
-  } else {
-//    turn right
-  }
+    //    Not facing max light
+    if (max(flLight, blLight) > (max(frLight, brLight))) {
+      //    turn left
+    }
+    else {
+      //    turn right
+    }
     takeReading();
   }
 }
@@ -218,7 +232,7 @@ void turnToSun() {
 void drive() {
   takeReading();
 
-  while (((flLight + frLight)/2) < lightThreshold) {
+  while (((flLight + frLight) / 2) < lightThreshold) {
     // drive forward
     delay(100);
     takeReading();
@@ -228,12 +242,33 @@ void drive() {
 void moveToSun() {
   takeReading();
 
-//  Face right direction
+  //  Face right direction
   turnToSun();
-//  Drive towards
+  //  Drive towards
   drive();
 }
 
+/**
+ * @brief Plays a song as defined by the global variables at the top
+ *
+ */
+void playSong() {
+  // iterate over the notes of the melody:
+  for (int thisNote = 0; thisNote < 8; thisNote++) {
+    // to calculate the note duration, take one second divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 1000 / noteDurations[thisNote];
+    tone(8, melody[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+    // the note's duration + 30% seems to work well:
+    int pauseBetweenNotes = noteDuration * 1.30;
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+    noTone(8);
+  }
+}
 
 // SETUP FUNCTION
 void setup() {
@@ -246,5 +281,8 @@ void setup() {
 
 // MAIN FUNCTION
 void loop() {
+  playSong();
+  delay(500);
+
   // put your main code here, to run repeatedly: 
 }
