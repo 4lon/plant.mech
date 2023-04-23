@@ -15,6 +15,7 @@ int brLight;
 int moisture;
 
 int pump = 2;
+int waterThreshold = 400;
 
 // Define Motor Driver pins
 int motorAEnablePin = 5;
@@ -95,6 +96,15 @@ void takeReading() {
   blLight = analogRead(blLightPin);
   brLight = analogRead(brLightPin);
   moisture = analogRead(moisturePin);
+}
+
+void waterPlant() {
+  int count = 0;
+  digitalWrite(pump, HIGH);
+  while ((analogRead(moisturePin) > waterThreshold) && (count < 1000)) {
+    count++;
+  }
+  digitalWrite(pump, LOW);
 }
 
 
