@@ -15,7 +15,7 @@ int brLight;
 int moisture;
 
 int pump = 2;
-int waterThreshold = 400;
+int waterThreshold = 360;
 
 // Define Motor Driver pins
 int motorAEnablePin = 5;
@@ -99,9 +99,9 @@ void takeReading() {
 }
 
 void waterPlant() {
-  int count = 0;
+  long time = millis();
   digitalWrite(pump, HIGH);
-  while ((analogRead(moisturePin) > waterThreshold) && (count < 1000)) {
+  while ((analogRead(moisturePin) > waterThreshold) && (millis() < time + 1000)) {
     count++;
   }
   digitalWrite(pump, LOW);
@@ -114,8 +114,8 @@ void setup() {
   Serial.begin(9600);
   pinMode(pump, OUTPUT);
   digitalWrite(pump, LOW);
-  initMotors();
-  pumpTest();
+//  initMotors();
+//  pumpTest();
 }
 
 
