@@ -2,19 +2,17 @@
 #include <arduino-timer.h>
 
 // GLOBAL VARIABLES
-int light0Pin = A0;
-int light1Pin = A1;
-int light2Pin = A2;
-int light3Pin = A3;
+int flLightPin = A0;
+int frLightPin = A1;
+int blLightPin = A2;
+int brLightPin = A3;
 int moisturePin = A4;
 
-int light0;
-int light1;
-int light2;
-int light3;
+int flLight;
+int frLight;
+int blLight;
+int brLight;
 int moisture;
-
-int pump = 2;
 
 int pump = 2;
 
@@ -36,8 +34,8 @@ void initMotors() {
   // pinMode(motorBInput2, OUTPUT);
 
   // Enable both motors
-  digitalWrite(motorAEnablePin, HIGH);
-  digitalWrite(motorBEnablePin, HIGH);
+  digitalWrite(motorAEnablePin, LOW);
+  digitalWrite(motorBEnablePin, LOW);
 }
 
 /**
@@ -68,14 +66,34 @@ void motorTest() {
   }
 }
 
+/**
+  @brief Tests the pump in an infinite loop
+
+*/
+void pumpTest() {
+  while (true) {
+    // Make Motor A spin forward
+    digitalWrite(pump, HIGH);
+
+    // Wait for 2 seconds
+    delay(1000);
+
+    // Stop both motors
+    digitalWrite(pump, LOW);
+
+    // Wait for 1 second
+    delay(1000);
+  }
+}
+
 
 
 // LIBRARY FUNCTIONS
 void takeReading() {
-  light0 = analogRead(light0Pin);
-  light1 = analogRead(light1Pin);
-  light2 = analogRead(light2Pin);
-  light3 = analogRead(light3Pin);
+  flLight = analogRead(flLightPin);
+  frLight = analogRead(frLightPin);
+  blLight = analogRead(blLightPin);
+  brLight = analogRead(brLightPin);
   moisture = analogRead(moisturePin);
 }
 
@@ -86,16 +104,19 @@ void setup() {
   Serial.begin(9600);
   pinMode(pump, OUTPUT);
   digitalWrite(pump, LOW);
+  initMotors();
+  pumpTest();
 }
+
 
 // MAIN FUNCTION
 void loop() {
   // put your main code here, to run repeatedly: 
   takeReading();
-  Serial.println(light0);
-  Serial.println(light1);
-  Serial.println(light2);
-  Serial.println(light3);
+  Serial.println(flLight);
+  Serial.println(frLight);
+  Serial.println(blLight);
+  Serial.println(brLight);
   Serial.println(moisture);
   delay(1000);
 }
