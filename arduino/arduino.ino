@@ -328,13 +328,26 @@ void moveToSun() {
   drive();
 }
 
+void demo() {
+  driveForward();
+  delay(8000);
+  stop();
+  turnLeft();
+  delay(500);
+  stop();
+
+  digitalWrite(pump, HIGH);
+  delay(5000);
+  digitalWrite(pump, LOW);
+}
+
 // SETUP FUNCTION
 void setup() {
   // Put your setup code here, to run once:
   Serial.begin(9600);
   initMotors();
   initPump();
-
+//  demo();
   // playWateringSong();
   // delay(500);
 }
